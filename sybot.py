@@ -1,5 +1,5 @@
 # Connor Stephen 20/2/2018
-# Sybot 0.0.1
+# Sybot 0.0.1 for Telegram Messenger
 
 import json
 import time
@@ -21,11 +21,11 @@ def get_json_from_url(url):
 	js = json.loads(content)
 	return js
 
-# checks for updates from a given chat
+# checks for updates from a given chat. times out if after 60 seconds no message is sent
 def get_updates(offset=None):
-	url = URL + "getUpdates?timeout=100"
+	url = URL + "getUpdates?timeout=60"
 	if offset:
-		url += "?offset={}".format(offset)
+		url += "&offset={}".format(offset)
 	js = get_json_from_url(url)
 	return js
 
@@ -46,6 +46,7 @@ def echo_all(updates):
 		except Exception as e:
 			print(e)
 
+# gets the id of the chat and the last message's text
 def get_last_chat_id_and_text(updates):
 	num_updates = len(updates["result"])
 	last_update = num_updates - 1
@@ -53,8 +54,9 @@ def get_last_chat_id_and_text(updates):
 	chat_id = updates["result"][last_update]["message"]["chat"]["id"]
 	return (text, chat_id)
 
-
+# sends message to individual chats
 def send_message(text, chat_id):
+	text = urllib.parse.quote_plus(text)
 	url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
 	get_url(url)
 	
